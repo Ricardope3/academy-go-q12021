@@ -4,4 +4,4 @@
 
 - To get a specific pokemone using an ID
 
-```http://localhost:8000/pokemons?id=3```x
+```http://localhost:8000/pokemons?id=3```
