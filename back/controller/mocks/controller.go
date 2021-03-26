@@ -3,3 +3,62 @@
 
 // Package mocks is a generated GoMock package.
 package mocks
+
+import (
+	reflect "reflect"
+
+	gomock "github.com/golang/mock/gomock"
+	models "github.com/ricardope3/academy-go-q12021/back/models"
+)
+
+// MockUseCase is a mock of UseCase interface.
+type MockUseCase struct {
+	ctrl     *gomock.Controller
+	recorder *MockUseCaseMockRecorder
+}
+
+// MockUseCaseMockRecorder is the mock recorder for MockUseCase.
+type MockUseCaseMockRecorder struct {
+	mock *MockUseCase
+}
+
+// NewMockUseCase creates a new mock instance.
+func NewMockUseCase(ctrl *gomock.Controller) *MockUseCase {
+	mock := &MockUseCase{ctrl: ctrl}
+	mock.recorder = &MockUseCaseMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockUseCase) EXPECT() *MockUseCaseMockRecorder {
+	return m.recorder
+}
+
+// GetPokemon mocks base method.
+func (m *MockUseCase) GetPokemon(requested_id int) ([]models.Pokemon, int) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetPokemon", requested_id)
+	ret0, _ := ret[0].([]models.Pokemon)
+	ret1, _ := ret[1].(int)
+	return ret0, ret1
+}
+
+// GetPokemon indicates an expected call of GetPokemon.
+func (mr *MockUseCaseMockRecorder) GetPokemon(requested_id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPokemon", reflect.TypeOf((*MockUseCase)(nil).GetPokemon), requested_id)
+}
+
+// SaveCSV mocks base method.
+func (m *MockUseCase) SaveCSV(todoArray []models.Todo) int {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SaveCSV", todoArray)
+	ret0, _ := ret[0].(int)
+	return ret0
+}
+
+// SaveCSV indicates an expected call of SaveCSV.
+func (mr *MockUseCaseMockRecorder) SaveCSV(todoArray interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveCSV", reflect.TypeOf((*MockUseCase)(nil).SaveCSV), todoArray)
+}
