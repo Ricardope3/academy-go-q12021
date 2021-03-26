@@ -10,7 +10,15 @@ import (
 	"github.com/ricardope3/academy-go-q12021/back/models"
 )
 
-func GetPokemon(requested_id int) ([]models.Pokemon, int) {
+type UseCase struct {
+}
+
+// New community UseCase
+func New() *UseCase {
+	return &UseCase{}
+}
+
+func (u *UseCase) GetPokemon(requested_id int) ([]models.Pokemon, int) {
 
 	res := make([]models.Pokemon, 0)
 
@@ -55,7 +63,7 @@ func GetPokemon(requested_id int) ([]models.Pokemon, int) {
 
 }
 
-func SaveCSV(todoArray []models.Todo) int {
+func (u *UseCase) SaveCSV(todoArray []models.Todo) int {
 	csvFile, err := os.Create("./data.csv")
 	if err != nil {
 		return 500

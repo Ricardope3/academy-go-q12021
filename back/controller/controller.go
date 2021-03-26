@@ -8,14 +8,30 @@ import (
 	"strconv"
 
 	"github.com/ricardope3/academy-go-q12021/back/models"
-	usecases "github.com/ricardope3/academy-go-q12021/back/usecases"
 )
+
+type UseCase interface {
+	GetPokemon(requested_id int) ([]models.Pokemon, int)
+	SaveCSV(todoArray []models.Todo) int
+}
+
+// Controller struct
+type Controller struct {
+	useCase UseCase
+}
+
+// New returns a controller
+func New(
+	u UseCase,
+) *Controller {
+	return &Controller{u}
+}
 
 func Root(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "Helloo World")
 }
 
-func Pokemons(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) Pokemons(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	ids, ok := r.URL.Query()["id"]
 	if !ok || len(ids) < 1 {
@@ -32,7 +48,7 @@ func Pokemons(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	pokemones, errCode := usecases.GetPokemon(requested_id)
+	pokemones, errCode := c.useCase.GetPokemon(requested_id)
 
 	w.WriteHeader(errCode)
 	for _, poke := range pokemones {
@@ -41,7 +57,7 @@ func Pokemons(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func Todos(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) Todos(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	res, err := http.Get("https://jsonplaceholder.typicode.com/todos")
@@ -56,7 +72,7 @@ func Todos(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(500)
 		return
 	}
-	errCode := usecases.SaveCSV(todoArray)
+	errCode := c.useCase.SaveCSV(todoArray)
 	w.WriteHeader(errCode)
 	if errCode < 300 {
 		json.NewEncoder(w).Encode(todoArray)
