@@ -22,3 +22,5 @@ All paremeters are not optional!!!
 - type: `even` || `odd` 
 - items: `int`
 - items_per_worker: `int`
+=======
+```http://localhost:8000/pokemons?id=3```
