@@ -10,13 +10,15 @@ import (
 type Controller interface {
 	Pokemons(w http.ResponseWriter, r *http.Request)
 	Todos(w http.ResponseWriter, r *http.Request)
+	Workers(w http.ResponseWriter, r *http.Request)
 }
 
 func Start(controller Controller) *mux.Router {
 	// http.HandleFunc("/", controller.Root)
 	r := mux.NewRouter().StrictSlash(true)
 	r.HandleFunc("/pokemons", controller.Pokemons)
-	r.HandleFunc("/getTodos", controller.Todos)
+	r.HandleFunc("/todos", controller.Todos)
+	r.HandleFunc("/workers", controller.Workers)
 	// http.HandleFunc("/pokemons", controller.Pokemons)
 	// http.HandleFunc("/getTodos", controller.Todos)
 	fmt.Println("Listening on port 8000")
