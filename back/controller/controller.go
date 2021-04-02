@@ -27,9 +27,6 @@ func New(
 	return &Controller{u}
 }
 
-func Root(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Helloo World")
-}
 
 func (c *Controller) Pokemons(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
