@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"net/http"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -23,7 +24,7 @@ func Test_Controller(t *testing.T) {
 		{
 			name:                    "OK, save CSV",
 			expectedParams:          []models.Todo{},
-			expectedUsecaseResponse: 200,
+			expectedUsecaseResponse: http.StatusAccepted,
 			expectUsecaseCall:       true,
 			wantError:               false,
 			expectedError:           nil,
@@ -34,15 +35,15 @@ func Test_Controller(t *testing.T) {
 			mockCtrl := gomock.NewController(t)
 			defer mockCtrl.Finish()
 
-			u := mocks.NewMockUseCase(mockCtrl)
+			u := mocks.NewMockEntity(mockCtrl)
 
 			if tt.expectUsecaseCall {
 				u.EXPECT().SaveCSV(tt.expectedParams).Return(tt.expectedUsecaseResponse)
 			}
 
-			c := New(u)
+			c := New(u, nil)
 
-			response := c.useCase.SaveCSV(tt.expectedParams)
+			response := c.entity.SaveCSV(tt.expectedParams)
 			assert.Equal(t, response, tt.expectedUsecaseResponse)
 
 		})
