@@ -192,9 +192,9 @@ func (c *Controller) Workers(w http.ResponseWriter, r *http.Request) {
 	validPokemons := make([]models.Pokemon, 0)
 	for {
 		poke := <-values
-		if poke.Id%2 == 0 && typeStr != "odd" {
+		if poke.Id%2 == 0 && typeStr == "even" {
 			validPokemons = append(validPokemons, poke)
-		} else if poke.Id%2 != 0 && typeStr != "even" {
+		} else if poke.Id%2 != 0 && typeStr == "odd" {
 			validPokemons = append(validPokemons, poke)
 		}
 		if len(validPokemons) >= items || done.number >= poolSize-1 || len(validPokemons) >= len(allPokemonsSlice) {
