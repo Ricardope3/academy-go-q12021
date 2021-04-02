@@ -148,10 +148,10 @@ func (c *Controller) Workers(w http.ResponseWriter, r *http.Request) {
 	numberOfValidPokemons := 0
 	for {
 		poke := <-values
-		if poke.Id%2 == 0 && type_str != "odd" {
+		if poke.Id%2 == 0 && type_str == "even" {
 			validPokemons = append(validPokemons, poke)
 			numberOfValidPokemons++
-		} else if poke.Id%2 != 0 && type_str != "even" {
+		} else if poke.Id%2 != 0 && type_str == "odd" {
 			validPokemons = append(validPokemons, poke)
 			numberOfValidPokemons++
 		}
