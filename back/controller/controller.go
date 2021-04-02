@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"math/rand"
@@ -20,7 +21,6 @@ type Entity interface {
 }
 
 type UseCase interface {
-	WorkerFlags(r *http.Request) (string, int, int, error)
 }
 
 // Controller struct
@@ -37,7 +37,7 @@ func New(
 	return &Controller{e, u}
 }
 
-type myStruct struct {
+type safeCounter struct {
 	mutex  *sync.Mutex
 	number int
 }
@@ -91,11 +91,50 @@ func (c *Controller) Todos(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func WorkerFlags(r *http.Request) (typeStr string, items int, items_per_worker int, err error) {
+	type_arr, ok := r.URL.Query()["type"]
+	if !ok || len(type_arr) < 1 {
+		return "", 0, 0, errors.New("Url Param 'type' is not given")
+	}
+	if len(type_arr) > 0 {
+		typeStr = type_arr[0]
+		if typeStr != "odd" && typeStr != "even" {
+			return "", 0, 0, errors.New("Only support 'odd' or 'even' types")
+		}
+	}
+
+	items_arr, ok := r.URL.Query()["items"]
+	if !ok || len(items_arr) < 1 {
+		return "", 0, 0, errors.New("Url Param 'items' is not given")
+	}
+	if len(type_arr) > 0 {
+		items_str := items_arr[0]
+		items, err = strconv.Atoi(items_str)
+		if err != nil {
+			return "", 0, 0, errors.New("Items must be an int")
+		}
+	}
+
+	items_per_worker_arr, ok := r.URL.Query()["items_per_worker"]
+	if !ok || len(items_per_worker_arr) < 1 {
+		return "", 0, 0, errors.New("Url Param 'items_per_worker' is not given")
+	}
+	err = nil
+	if len(items_per_worker_arr) > 0 {
+		items_per_worker_str := items_per_worker_arr[0]
+		items_per_worker, err = strconv.Atoi(items_per_worker_str)
+		if err != nil {
+			return "", 0, 0, errors.New("items_per_worker must be an int")
+		}
+	}
+	return typeStr, items, items_per_worker, nil
+}
+
 func (c *Controller) Workers(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	var done = myStruct{&sync.Mutex{}, 0}
+	var done = safeCounter{&sync.Mutex{}, 0}
 
-	type_str, items, max_items_per_worker, err := c.useCase.WorkerFlags(r)
+	typeStr, items, maxItemsPerWorker, err := WorkerFlags(r)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(w, err.Error())
@@ -106,11 +145,12 @@ func (c *Controller) Workers(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err.Error())
+		return
 	}
 
 	values := make(chan models.Pokemon)
 	shutdown := make(chan struct{})
-	poolSize := len(allPokemonsSlice) / 3
+	poolSize := items / maxItemsPerWorker
 	steps := len(allPokemonsSlice) / poolSize
 	var wg sync.WaitGroup
 	wg.Add(poolSize)
@@ -120,10 +160,10 @@ func (c *Controller) Workers(w http.ResponseWriter, r *http.Request) {
 			rand.Seed(time.Now().UnixNano())
 			starting_index := steps * ii
 			ending_index := (steps + steps*ii) - 1
-			r := rand.Intn(ending_index-starting_index+1) + starting_index
+			index := starting_index
 			items_of_worker := 0
 			for {
-				if items_of_worker >= max_items_per_worker {
+				if items_of_worker >= maxItemsPerWorker {
 
 					done.mutex.Lock()
 					done.number += 1
@@ -131,10 +171,15 @@ func (c *Controller) Workers(w http.ResponseWriter, r *http.Request) {
 					wg.Done()
 					return
 				}
+				if index >= ending_index {
+					wg.Done()
+					return
+				}
 				select {
 
-				case values <- allPokemonsSlice[r]:
+				case values <- allPokemonsSlice[index]:
 					items_of_worker++
+					index++
 
 				case <-shutdown:
 					wg.Done()
@@ -145,17 +190,14 @@ func (c *Controller) Workers(w http.ResponseWriter, r *http.Request) {
 		}(i)
 	}
 	validPokemons := make([]models.Pokemon, 0)
-	numberOfValidPokemons := 0
 	for {
 		poke := <-values
-		if poke.Id%2 == 0 && type_str != "odd" {
+		if poke.Id%2 == 0 && typeStr != "odd" {
 			validPokemons = append(validPokemons, poke)
-			numberOfValidPokemons++
-		} else if poke.Id%2 != 0 && type_str != "even" {
+		} else if poke.Id%2 != 0 && typeStr != "even" {
 			validPokemons = append(validPokemons, poke)
-			numberOfValidPokemons++
 		}
-		if numberOfValidPokemons >= items || done.number >= poolSize || numberOfValidPokemons >= len(allPokemonsSlice) {
+		if len(validPokemons) >= items || done.number >= poolSize-1 || len(validPokemons) >= len(allPokemonsSlice) {
 			break
 		}
 	}
