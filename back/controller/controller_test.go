@@ -35,13 +35,14 @@ func Test_Controller(t *testing.T) {
 			mockCtrl := gomock.NewController(t)
 			defer mockCtrl.Finish()
 
-			u := mocks.NewMockEntity(mockCtrl)
+			u := mocks.NewMockUseCase(mockCtrl)
+			e := mocks.NewMockEntity(mockCtrl)
 
 			if tt.expectUsecaseCall {
-				u.EXPECT().SaveCSV(tt.expectedParams).Return(tt.expectedUsecaseResponse)
+				e.EXPECT().SaveCSV(tt.expectedParams).Return(tt.expectedUsecaseResponse)
 			}
 
-			c := New(u)
+			c := New(e, u)
 
 			response := c.entity.SaveCSV(tt.expectedParams)
 			assert.Equal(t, response, tt.expectedUsecaseResponse)

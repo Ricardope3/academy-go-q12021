@@ -5,6 +5,7 @@
 package mocks
 
 import (
+	http "net/http"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
@@ -34,6 +35,21 @@ func (m *MockEntity) EXPECT() *MockEntityMockRecorder {
 	return m.recorder
 }
 
+// GetAllPokemonsFromCSV mocks base method.
+func (m *MockEntity) GetAllPokemonsFromCSV() ([]models.Pokemon, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAllPokemonsFromCSV")
+	ret0, _ := ret[0].([]models.Pokemon)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAllPokemonsFromCSV indicates an expected call of GetAllPokemonsFromCSV.
+func (mr *MockEntityMockRecorder) GetAllPokemonsFromCSV() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllPokemonsFromCSV", reflect.TypeOf((*MockEntity)(nil).GetAllPokemonsFromCSV))
+}
+
 // GetPokemonFromCSV mocks base method.
 func (m *MockEntity) GetPokemonFromCSV(requestedId int) ([]models.Pokemon, int) {
 	m.ctrl.T.Helper()
@@ -61,4 +77,44 @@ func (m *MockEntity) SaveCSV(todoArray []models.Todo) int {
 func (mr *MockEntityMockRecorder) SaveCSV(todoArray interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveCSV", reflect.TypeOf((*MockEntity)(nil).SaveCSV), todoArray)
+}
+
+// MockUseCase is a mock of UseCase interface.
+type MockUseCase struct {
+	ctrl     *gomock.Controller
+	recorder *MockUseCaseMockRecorder
+}
+
+// MockUseCaseMockRecorder is the mock recorder for MockUseCase.
+type MockUseCaseMockRecorder struct {
+	mock *MockUseCase
+}
+
+// NewMockUseCase creates a new mock instance.
+func NewMockUseCase(ctrl *gomock.Controller) *MockUseCase {
+	mock := &MockUseCase{ctrl: ctrl}
+	mock.recorder = &MockUseCaseMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockUseCase) EXPECT() *MockUseCaseMockRecorder {
+	return m.recorder
+}
+
+// WorkerFlags mocks base method.
+func (m *MockUseCase) WorkerFlags(r *http.Request) (string, int, int, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "WorkerFlags", r)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(int)
+	ret2, _ := ret[2].(int)
+	ret3, _ := ret[3].(error)
+	return ret0, ret1, ret2, ret3
+}
+
+// WorkerFlags indicates an expected call of WorkerFlags.
+func (mr *MockUseCaseMockRecorder) WorkerFlags(r interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WorkerFlags", reflect.TypeOf((*MockUseCase)(nil).WorkerFlags), r)
 }

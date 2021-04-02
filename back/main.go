@@ -9,6 +9,7 @@ import (
 	"github.com/ricardope3/academy-go-q12021/back/controller"
 	"github.com/ricardope3/academy-go-q12021/back/entity"
 	app "github.com/ricardope3/academy-go-q12021/back/router"
+	"github.com/ricardope3/academy-go-q12021/back/usecases"
 )
 
 func main() {
@@ -19,7 +20,8 @@ func main() {
 	}
 
 	entity := entity.New()
-	controller := controller.New(entity)
+	useCase := usecases.New()
+	controller := controller.New(entity, useCase)
 	r := app.Start(controller)
 	port := os.Getenv("PORT")
 	http.ListenAndServe("localhost:"+port, r)
