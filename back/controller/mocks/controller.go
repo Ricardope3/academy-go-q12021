@@ -11,46 +11,46 @@ import (
 	models "github.com/ricardope3/academy-go-q12021/back/models"
 )
 
-// MockUseCase is a mock of UseCase interface.
-type MockUseCase struct {
+// MockEntity is a mock of Entity interface.
+type MockEntity struct {
 	ctrl     *gomock.Controller
-	recorder *MockUseCaseMockRecorder
+	recorder *MockEntityMockRecorder
 }
 
-// MockUseCaseMockRecorder is the mock recorder for MockUseCase.
-type MockUseCaseMockRecorder struct {
-	mock *MockUseCase
+// MockEntityMockRecorder is the mock recorder for MockEntity.
+type MockEntityMockRecorder struct {
+	mock *MockEntity
 }
 
-// NewMockUseCase creates a new mock instance.
-func NewMockUseCase(ctrl *gomock.Controller) *MockUseCase {
-	mock := &MockUseCase{ctrl: ctrl}
-	mock.recorder = &MockUseCaseMockRecorder{mock}
+// NewMockEntity creates a new mock instance.
+func NewMockEntity(ctrl *gomock.Controller) *MockEntity {
+	mock := &MockEntity{ctrl: ctrl}
+	mock.recorder = &MockEntityMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockUseCase) EXPECT() *MockUseCaseMockRecorder {
+func (m *MockEntity) EXPECT() *MockEntityMockRecorder {
 	return m.recorder
 }
 
-// GetPokemon mocks base method.
-func (m *MockUseCase) GetPokemon(requested_id int) ([]models.Pokemon, int) {
+// GetPokemonFromCSV mocks base method.
+func (m *MockEntity) GetPokemonFromCSV(requestedId int) ([]models.Pokemon, int) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetPokemon", requested_id)
+	ret := m.ctrl.Call(m, "GetPokemonFromCSV", requestedId)
 	ret0, _ := ret[0].([]models.Pokemon)
 	ret1, _ := ret[1].(int)
 	return ret0, ret1
 }
 
-// GetPokemon indicates an expected call of GetPokemon.
-func (mr *MockUseCaseMockRecorder) GetPokemon(requested_id interface{}) *gomock.Call {
+// GetPokemonFromCSV indicates an expected call of GetPokemonFromCSV.
+func (mr *MockEntityMockRecorder) GetPokemonFromCSV(requestedId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPokemon", reflect.TypeOf((*MockUseCase)(nil).GetPokemon), requested_id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPokemonFromCSV", reflect.TypeOf((*MockEntity)(nil).GetPokemonFromCSV), requestedId)
 }
 
 // SaveCSV mocks base method.
-func (m *MockUseCase) SaveCSV(todoArray []models.Todo) int {
+func (m *MockEntity) SaveCSV(todoArray []models.Todo) int {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SaveCSV", todoArray)
 	ret0, _ := ret[0].(int)
@@ -58,7 +58,7 @@ func (m *MockUseCase) SaveCSV(todoArray []models.Todo) int {
 }
 
 // SaveCSV indicates an expected call of SaveCSV.
-func (mr *MockUseCaseMockRecorder) SaveCSV(todoArray interface{}) *gomock.Call {
+func (mr *MockEntityMockRecorder) SaveCSV(todoArray interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveCSV", reflect.TypeOf((*MockUseCase)(nil).SaveCSV), todoArray)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveCSV", reflect.TypeOf((*MockEntity)(nil).SaveCSV), todoArray)
 }

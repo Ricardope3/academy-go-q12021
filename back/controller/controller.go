@@ -10,19 +10,19 @@ import (
 	"github.com/ricardope3/academy-go-q12021/back/models"
 )
 
-type UseCase interface {
-	GetPokemon(requested_id int) ([]models.Pokemon, int)
+type Entity interface {
+	GetPokemonFromCSV(requestedId int) ([]models.Pokemon, int)
 	SaveCSV(todoArray []models.Todo) int
 }
 
 // Controller struct
 type Controller struct {
-	useCase UseCase
+	entity Entity
 }
 
 // New returns a controller
 func New(
-	u UseCase,
+	u Entity,
 ) *Controller {
 	return &Controller{u}
 }
@@ -38,17 +38,17 @@ func (c *Controller) Pokemons(w http.ResponseWriter, r *http.Request) {
 		fmt.Print("Url Param 'id' is not given")
 	}
 	var err error
-	requested_id := -1
+	requestedId := -1
 	if len(ids) > 0 {
-		requested_id_str := ids[0]
-		requested_id, err = strconv.Atoi(requested_id_str)
+		requestedIdStr := ids[0]
+		requestedId, err = strconv.Atoi(requestedIdStr)
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
 	}
 
-	pokemones, errCode := c.useCase.GetPokemon(requested_id)
+	pokemones, errCode := c.entity.GetPokemonFromCSV(requestedId)
 
 	w.WriteHeader(errCode)
 	for _, poke := range pokemones {
@@ -63,16 +63,16 @@ func (c *Controller) Todos(w http.ResponseWriter, r *http.Request) {
 	res, err := http.Get("https://jsonplaceholder.typicode.com/todos")
 	bodyBytes, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		w.WriteHeader(500)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	todoArray := make([]models.Todo, 0)
 	err = json.Unmarshal(bodyBytes, &todoArray)
 	if err != nil {
-		w.WriteHeader(500)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	errCode := c.useCase.SaveCSV(todoArray)
+	errCode := c.entity.SaveCSV(todoArray)
 	w.WriteHeader(errCode)
 	if errCode < 300 {
 		json.NewEncoder(w).Encode(todoArray)
